@@ -3,604 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uno Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>Kingsley Dias</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: 'Press Start 2P', cursive;
-            background-color: #1a1a1a;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden; /* Prevent horizontal scrollbar */
-        }
-
-        #gameCanvas {
-          /* border: 2px solid #ddd; */
-            margin-top: 20px;
-            display: block;
-            max-width: 95%; /* Responsive width */
-            height: auto; /* Maintain aspect ratio */
-            max-height: 80vh; /* Max height to maintain spacing and prevent overflow*/
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            background-color: #2a2a2a;
-        }
-
-        #controls {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            width: 100%; /* Ensure controls take full width */
-            gap: 10px; /* Space between buttons */
-        }
-
-        .button {
-            padding: 10px 15px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            border: none;
-            border-radius: 8px;
-            background-color: #4CAF50;
-            color: white;
-            transition: background-color 0.3s ease;
-            font-family: 'Press Start 2P', cursive;
-            min-width: 100px; /* Add a minimum width */
-            text-align: center; /* Center the text */
-        }
-        .button:hover {
-                background-color: #367c39;
-        }
-
-        #message {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            z-index: 10;
-            display: none;
-        }
-
-        #playerHand, #computerHand {
-            display: flex;
-            overflow-x: auto;
-            margin-top: 10px;
-            padding-bottom: 10px;
-            width: 95%;
-            margin-left: auto;
-            margin-right: auto;
-            gap: 5px;
-        }
-        #playerHand {
-             margin-bottom: 70px; /* Add space below player hand */
-        }
-
-        #playerHand img, #computerHand img {
-            height: auto;  /* Maintain aspect ratio */
-            max-height: 120px; /* Increased max height for larger cards */
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        #playerHand img:hover {
-            transform: translateY(-10px) scale(1.1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        }
-
-        .card {
-            width: auto;
-            height: auto;
-            max-height: 120px;
-            border-radius: 8px;
-            margin: 5px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.7rem;
-            color: white;
-            cursor: pointer;
-            user-select: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease;
-            position: relative; /* Needed for absolute positioning of text */
-        }
-
-       .card:hover {
-            transform: translateY(-10px) scale(1.1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        }
-
-        .card-text {
-            position: absolute; /* Position text relative to card */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none; /* Allows clicks to go through text to card */
-            font-size: 0.8rem;  /* Increased font size for better readability */
-            color: white; /* Ensure text is white */
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); /* Add shadow for better contrast */
-        }
-
-        .discard-pile {
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .discard-pile img {
-            height: auto;
-            max-height: 120px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .draw-pile {
-            position: absolute;
-             top: 20%;
-            left: 20%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .draw-pile img {
-            height: auto;
-            max-height: 120px;
-            border-radius: 8px;
-             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-         .card-back {
-            background-image: url('https://deckofcardsapi.com/static/img/back.png');
-            background-size: cover;
-            width: 80px;  /* Fixed width for card back */
-            height: 120px; /* Fixed height for card back */
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 0.7rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
+      body {
+        font-family: 'Roboto Condensed', sans-serif;
+      }
+      .title-font {
+        font-family: 'Press Start 2P', cursive;
+      }
     </style>
 </head>
-<body>
-    <canvas id="gameCanvas"></canvas>
-    <div id="controls">
-        <button id="startButton" class="button">Start Game</button>
-        <button id="drawButton" class="button">Draw Card</button>
-        <button id="skipButton" class="button">Skip Turn</button>
-        <button id="unoButton" class="button">Uno</button>
-    </div>
-    <div id="message"></div>
-    <div class="discard-pile">
-        <h2>Discard Pile</h2>
-        <img id="discardPileCard" src="">
-    </div>
-     <div class="draw-pile">
-        <h2>Draw Pile</h2>
-        <div class="card-back">Cards Left: <span id="drawPileCount"></span></div>
-    </div>
-    <div id="playerHand"><h2>Your Hand</h2></div>
-    <div id="computerHand"><h2>Computer Hand</h2></div>
+<body class="bg-gray-900 text-white">
+    <header class="bg-gray-800 py-6 px-4 rounded-md shadow-md sticky top-0 z-10 border-b border-gray-700">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="title-font text-2xl text-gray-300">
+                <span class="text-blue-400">M</span><span class="text-teal-400">y</span> <span class="text-white">Projects</span>
+            </h1>
+            <nav>
+                <a href="#projects" class="text-gray-300 hover:text-gray-400 transition duration-300 mr-4">Projects</a>
+                <a href="#about" class="text-gray-300 hover:text-gray-400 transition duration-300">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="banner bg-black text-white text-center py-20 px-4 rounded-md">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold mb-4 text-gray-200 title-font">
+                <span class="text-white">W</span><span class="text-white">elcome to my GitHub Portfolio</span>
+            </h2>
+            <p class="text-xl text-gray-400 mb-8">A showcase of my coding projects and creations.</p>
+            <a href="#projects" class="bg-gray-200 text-black py-3 px-6 rounded-full hover:bg-gray-300 transition duration-300 text-lg font-semibold">
+                <span class="text-black">Explore My Projects</span>
+            </a>
+        </div>
+    </section>
+
+    <section id="projects" class="projects py-16 px-4 text-center rounded-md">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-white">Featured Projects</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="project-card bg-gray-800 rounded-lg shadow-md p-6 flex flex-col justify-between transition duration-300 hover:shadow-lg hover:scale-105 border border-gray-700">
+                    <h3 class="text-xl font-semibold text-white mb-4 text-gray-200">Project 1: Cool Website</h3>
+                    <p class="text-gray-400 mb-4">A responsive website built with HTML, CSS, and JavaScript.</p>
+                    <a href="https://github.com/yourusername/project1" target="_blank" rel="noopener noreferrer" class="bg-gray-200 text-black py-2 px-4 rounded-full hover:bg-gray-300 transition duration-300 text-sm font-semibold self-start">
+                        View on GitHub
+                    </a>
+                </div>
+                <div class="project-card bg-gray-800 rounded-lg shadow-md p-6 flex flex-col justify-between transition duration-300 hover:shadow-lg hover:scale-105 border border-gray-700">
+                    <h3 class="text-xl font-semibold text-white mb-4 text-gray-200">Project 2: Data Analysis Tool</h3>
+                    <p class="text-gray-400 mb-4">A Python tool for analyzing large datasets.</p>
+                    <a href="https://github.com/yourusername/project2" target="_blank" rel="noopener noreferrer" class="bg-gray-200 text-black py-2 px-4 rounded-full hover:bg-gray-300 transition duration-300 text-sm font-semibold self-start">
+                        View on GitHub
+                    </a>
+                </div>
+                <div class="project-card bg-gray-800 rounded-lg shadow-md p-6 flex flex-col justify-between transition duration-300 hover:shadow-lg hover:scale-105 border border-gray-700">
+                    <h3 class="text-xl font-semibold text-white mb-4 text-gray-200">Project 3: Mobile App</h3>
+                    <p class="text-gray-400 mb-4">A cross-platform mobile application.</p>
+                    <a href="https://github.com/yourusername/project3" target="_blank" rel="noopener noreferrer" class="bg-gray-200 text-black py-2 px-4 rounded-full hover:bg-gray-300 transition duration-300 text-sm font-semibold self-start">
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about bg-black py-16 px-4 text-center rounded-md border-t border-gray-800">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-white">About Me</h2>
+            <p class="text-gray-400 text-lg max-w-3xl mx-auto mb-8">
+                Hi my name is Kingsley Dias! I am a passionate developer with a strong interest in creating innovative and impactful projects.
+                This portfolio showcases some of my best work, demonstrating my skills in various technologies.
+                I am always eager to learn new things and try new technologies..
+            </p>
+            <div class="flex justify-center">
+                <div class="rounded-full overflow-hidden w-48 h-48 border-4 border-gray-700">
+                    <img src="https://via.placeholder.com/200x200/222222/FFFFFF" alt="Your Name" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black text-gray-400 py-4 text-center rounded-md border-t border-gray-800">
+        <p>© 2025 Kingsley Dias GitHub Projects. All rights reserved.</p>
+    </footer>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const startButton = document.getElementById('startButton');
-        const drawButton = document.getElementById('drawButton');
-        const skipButton = document.getElementById('skipButton');
-        const unoButton = document.getElementById('unoButton');
-        const messageElement = document.getElementById('message');
-        const playerHandElement = document.getElementById('playerHand');
-        const computerHandElement = document.getElementById('computerHand');
-        const discardPileCardElement = document.getElementById('discardPileCard');
-        const drawPileCountElement = document.getElementById('drawPileCount');
-
-        canvas.width = window.innerWidth * 0.9;  // Adjust as needed
-        canvas.height = window.innerHeight * 0.4; // Adjust as needed
-
-        let deck = [];
-        let playerHand = [];
-        let computerHand = [];
-        let discardPile = [];
-        let currentPlayer = 0; // 0 for player, 1 for computer
-        let gameStarted = false;
-        let selectedCard = null;
-        let unoDeclared = false;
-        let gameAnimationFrame;
-        let skipPressed = false; //track if skip button was pressed.
-
-
-        const colors = ['red', 'yellow', 'green', 'blue'];
-        const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-        const actions = ['skip', 'reverse', 'drawTwo'];
-        const wilds = ['wild', 'wildDrawFour'];
-
-        function createDeck() {
-            deck = [];
-            for (let color of colors) {
-                for (let number of numbers) {
-                    deck.push({ color: color, value: number, id: `${color}-${number}` });
-                }
-                for (let i = 0; i < 2; i++) {
-                    for (let action of actions) {
-                        deck.push({ color: color, value: action, id: `${color}-${action}-${i}` });
-                    }
-                }
-            }
-            for (let i = 0; i < 4; i++) {
-                deck.push({ color: 'black', value: 'wild', id: `wild-${i}` });
-                deck.push({ color: 'black', value: 'wildDrawFour', id: `wildDrawFour-${i}` });
-            }
-            shuffleDeck(deck);
-        }
-
-        function shuffleDeck(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        function dealHands() {
-            playerHand = [];
-            computerHand = [];
-            for (let i = 0; i < 7; i++) {
-                playerHand.push(deck.pop());
-                computerHand.push(deck.pop());
-            }
-            discardPile.push(deck.pop());
-        }
-
-        function drawCard(player) {
-            if (deck.length > 0) {
-                const card = deck.pop();
-                if (player === 0) {
-                    playerHand.push(card);
-                } else {
-                    computerHand.push(card);
-                }
-                showMessage(`${player === 0 ? 'Player' : 'Computer'} drew a card.`);
-                updateDisplay();
-                return card; // Return the drawn card
-            } else {
-                showMessage("No more cards in the draw pile!");
-                return null; // Return null if no cards are available
-            }
-        }
-
-        function getCardImageUrl(card) {
-           if (!card) return '';
-            let color = card.color;
-            let value = card.value;
-            if (color === 'black') {
-                if (value === 'wild') {
-                    return 'https://deckofcardsapi.com/static/img/W1.png';
-                } else if (value === 'wildDrawFour') {
-                    return 'https://deckofcardsapi.com/static/img/W4.png';
-                }
-            } else {
-                let colorCode = '';
-                switch (color) {
-                    case 'red': colorCode = 'D'; break;
-                    case 'yellow': colorCode = 'Y'; break;
-                    case 'green': colorCode = 'G'; break;
-                    case 'blue': colorCode = 'B'; break;
-                }
-                if (value === 'skip') {
-                    return `https://deckofcardsapi.com/static/img/${colorCode}S.png`;
-                } else if (value === 'reverse') {
-                     return `https://deckofcardsapi.com/static/img/${colorCode}R.png`;
-                } else if (value === 'drawTwo') {
-                    return `https://deckofcardsapi.com/static/img/${colorCode}P.png`;
-                } else {
-                   return `https://deckofcardsapi.com/static/img/${colorCode}${value}.png`;
-                }
-            }
-            return '';
-        }
-
-        function displayCard(card, handElement, isComputer = false) {
-            let cardDiv = document.createElement('div');
-            cardDiv.classList.add('card');
-            cardDiv.style.backgroundColor = getCardColor(card.color);
-             if(!isComputer){ //dont show value for computer
-                let cardText = document.createElement('span');
-                cardText.classList.add('card-text');
-                cardText.textContent = getCardText(card.value, card.color);
-                cardDiv.appendChild(cardText);
-             }
-
-            let img = document.createElement('img');
-            img.src = getCardImageUrl(card);
-            img.alt = `${card.color} ${card.value}`;
-            img.dataset.cardId = card.id;
-            if (!isComputer) {
-                img.onclick = () => {
-                    selectedCard = card;
-                    console.log('Selected card:', selectedCard);
-                    updateDisplay(); // Re-render to show selection
-                };
-            }
-            cardDiv.appendChild(img);
-            handElement.appendChild(cardDiv);
-        }
-
-        function getCardColor(color) {
-            switch (color) {
-                case 'red': return '#FF4444';
-                case 'yellow': return '#FFD700';
-                case 'green': return '#00CC00';
-                case 'blue': return '#0088FF';
-                case 'black': return '#000000';
-                default: return '#FFFFFF';
-            }
-        }
-
-        function getCardText(value, color) {
-            if (color === 'black') {
-                if (value === 'wild') return 'W';
-                if (value === 'wildDrawFour') return 'W+4';
-            }
-            if (value === 'skip') return 'S';
-            if (value === 'reverse') return 'R';
-            if (value === 'drawTwo') return '+2';
-            return value;
-        }
-
-        function updateDisplay() {
-            playerHandElement.innerHTML = '<h2>Your Hand</h2>';
-            computerHandElement.innerHTML = '<h2>Computer Hand</h2>';
-            playerHand.forEach(card => displayCard(card, playerHandElement));
-            computerHand.forEach(card => displayCard(card, computerHandElement, true));
-            discardPileCardElement.src = getCardImageUrl(discardPile[discardPile.length - 1]);
-            drawPileCountElement.textContent = deck.length;
-            // Disable/enable buttons based on game state
-            drawButton.disabled = !gameStarted || currentPlayer !== 0;
-            skipButton.disabled = !gameStarted || currentPlayer !== 0;
-            unoButton.disabled = !gameStarted || currentPlayer !== 0;
-            if (playerHand.length <= 2){
-                 unoButton.style.backgroundColor = '#FF8800'; //orange
-            } else {
-                 unoButton.style.backgroundColor = '#4CAF50'; //green
-            }
-
-            if (selectedCard) {
-                const cardElements = playerHandElement.querySelectorAll('img');
-                cardElements.forEach(img => {
-                    if (img.dataset.cardId === selectedCard.id) {
-                        img.style.transform = 'translateY(-20px) scale(1.2)';
-                        img.style.boxShadow = '0 6px 8px rgba(0, 0, 0, 0.5)';
-                    } else {
-                        img.style.transform = 'translateY(0) scale(1)';
-                        img.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
-                    }
-                });
-            }
-        }
-
-        function isValidPlay(card, topDiscard) {
-            if (card.color === 'black') return true;
-            if (card.color === topDiscard.color) return true;
-            if (card.value === topDiscard.value) return true;
-            return false;
-        }
-
-        function playCard(player, card) {
-            if (player === 0) { // Player
-                if (!selectedCard) {
-                    showMessage("Please select a card to play.");
-                    return false;
-                }
-                if (!isValidPlay(card, discardPile[discardPile.length - 1])) {
-                    showMessage("Invalid card! Please play a valid card.");
-                    return false;
-                }
-                const cardIndex = playerHand.findIndex(c => c.id === card.id);
-                if (cardIndex === -1) return false;  // Card not found
-
-                playerHand.splice(cardIndex, 1);
-                discardPile.push(card);
-                selectedCard = null; // Clear selection after playing
-                updateDisplay();
-                showMessage(`Player played ${card.color} ${card.value}.`);
-                if (playerHand.length === 0) {
-                    gameOver(0); // Player wins
-                    return true;
-                }
-                currentPlayer = 1; // Switch turn
-                skipPressed = false;
-                computerTurn(); // Start computer's turn
-                return true;
-
-            } else { // Computer
-                const cardIndex = computerHand.findIndex(c => c.id === card.id);
-                if (cardIndex === -1) return false;
-                computerHand.splice(cardIndex, 1);
-                discardPile.push(card);
-                showMessage(`Computer played ${card.color} ${card.value}.`);
-                 if (computerHand.length === 0) {
-                    gameOver(1); // Computer wins
-                    return true;
-                }
-                currentPlayer = 0;
-                return true;
-            }
-        }
-
-        function computerTurn() {
-           setTimeout(() => {
-                const validCards = computerHand.filter(card => isValidPlay(card, discardPile[discardPile.length - 1]));
-                if (validCards.length > 0) {
-                    const cardToPlay = validCards[0];  // Play the first valid card
-                    playCard(1, cardToPlay);
-                    updateDisplay();
-                    if(cardToPlay.value === 'skip'){
-                         showMessage('Computer skipped your turn!');
-                         currentPlayer = 0;
-                         return;
-                    }
-                    if(cardToPlay.value === 'drawTwo'){
-                        const drawnCards = [];
-                        drawnCards.push(drawCard(0));
-                        drawnCards.push(drawCard(0));
-                        if(drawnCards[0] && drawnCards[1]){
-                             showMessage('Computer played a Draw Two! You drew 2 cards.');
-                        } else if (drawnCards[0]){
-                             showMessage('Computer played a Draw Two! You drew 1 card.');
-                        }
-
-                        currentPlayer = 0;
-                        return;
-                    }
-
-                    if(cardToPlay.value === 'reverse'){
-                         showMessage('Computer reversed the order!');
-                         currentPlayer = 0;
-                         return;
-                    }
-                    if (computerHand.length > 0) {
-                         currentPlayer = 0;
-                    }
-
-                } else {
-                    // Computer has no valid cards, draw a card
-                    const drawnCard = drawCard(1);
-                    if (drawnCard) {
-                        showMessage('Computer drew a card.');
-                         if (isValidPlay(drawnCard, discardPile[discardPile.length-1])){
-                            playCard(1, drawnCard);
-                            updateDisplay();
-                            if (computerHand.length > 0){
-                                currentPlayer = 0;
-                            }
-                         } else {
-                            currentPlayer = 0;
-                         }
-                    } else {
-                         currentPlayer = 0;
-                    }
-                }
-                updateDisplay();
-                if (computerHand.length === 0) {
-                    gameOver(1);
-                    return;
-                }
-                if (currentPlayer === 0){
-                    playerTurn();
-                }
-
-            }, 1000);
-        }
-
-        function playerTurn() {
-             if (playerHand.length === 0){
-                gameOver(0);
-                return;
-             }
-            showMessage("It's your turn!");
-            if (skipPressed){
-                 showMessage("Your turn was skipped!");
-                 skipPressed = false;
-                 currentPlayer = 1;
-                 computerTurn();
-            }
-        }
-
-        function gameOver(winner) {
-            gamePlaying = false;
-            let message = winner === 0 ? "You Win!" : "Computer Wins!";
-            showMessage(message);
-            startButton.textContent = 'New Game';
-            if (gameAnimationFrame) {
-                cancelAnimationFrame(gameAnimationFrame);
-            }
-        }
-
-        function startGame() {
-            if (!gamePlaying) {
-                startButton.textContent = 'Start Game';
-                createDeck();
-                dealHands();
-                discardPile.push(deck.pop());
-                gamePlaying = true;
-                currentPlayer = 0;
-                selectedCard = null;
-                unoDeclared = false;
-                updateDisplay();
-                showMessage("Game started! It's your turn.");
-                playerTurn();
-            }
-        }
-
-        function handleDrawClick() {
-            if (gamePlaying && currentPlayer === 0) {
-                const drawnCard = drawCard(0);
-                if (drawnCard){
-                    selectedCard = null;
-                    updateDisplay();
-                    currentPlayer = 1;
-                    computerTurn();
-                }
-            }
-        }
-
-        function handleSkipClick(){
-             if(gamePlaying && currentPlayer === 0){
-                if (discardPile[discardPile.length-1].value === 'skip'){
-                    playCard(0, playerHand[0]); //play first card.
-                    skipPressed = true;
-                    currentPlayer = 1;
-                    computerTurn();
-                } else {
-                     showMessage('You can only skip if a skip card is on the discard pile');
-                }
-             }
-        }
-
-        function handleUnoClick() {
-            if (gamePlaying && currentPlayer === 0) {
-                if (playerHand.length === 2) {
-                    unoDeclared = true;
-                    showMessage("UNO declared!");
-                } else {
-                    showMessage("You can only declare UNO with two cards left!");
-                }
-            }
-        }
-
-
-        startButton.addEventListener('click', startGame);
-        drawButton.addEventListener('click', handleDrawClick);
-        skipButton.addEventListener('click', handleSkipClick);
-        unoButton.addEventListener('click', handleUnoClick);
-
-
-        //Initial call.
-        showMessage('Press Start Game');
-        updateDisplay();
-
+        // You can add JavaScript for interactive features here
+        // For example:
+        // - Smooth scrolling for navigation links
+        // - Dynamic content loading
     </script>
 </body>
 </html>
