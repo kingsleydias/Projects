@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Trivia Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: 'Roboto Condensed', sans-serif;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+      }
+      #question-box {
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+        color: #333;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #ccc;
+      }
+      .answer-options {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .answer-option {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        margin: 5px 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        flex: 1 0 auto;
+        min-width: 200px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+      }
+      .answer-option:hover {
+        background-color: #367c39;
+      }
+      #feedback {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        min-height: 30px;
+      }
+      #next-question {
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+      }
+      #next-question:hover {
+        background-color: #005682;
+      }
+      .game-over-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.85);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+      .game-over-content {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        width: 90%;
+        max-width: 600px;
+      }
+      .game-over-title {
+        font-size: 2rem;
+        color: #FFD700;
+        margin-bottom: 10px;
+      }
+      .game-over-score {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .play-again-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+      }
+      .play-again-button:hover {
+        background-color: #367c39;
+      }
+      #score-display {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      #streak-display {
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      #testament-selection {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      #testament-selection button {
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        margin: 0 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+      }
+      #testament-selection button:hover {
+        background-color: #005682;
+      }
+      #testament-selection button.selected {
+        background-color: #367c39;
+      }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container">
+        <h1 class="text-3xl font-bold mb-8 text-center text-blue-700 title-font">Bible Trivia Game</h1>
+        <div id="testament-selection">
+            <button data-testament="old">Old Testament</button>
+            <button data-testament="new">New Testament</button>
+        </div>
+        <div id="question-box"></div>
+        <div class="answer-options" id="answer-options">
+            <button class="answer-option" id="option1"></button>
+            <button class="answer-option" id="option2"></button>
+            <button class="answer-option" id="option3"></button>
+        </div>
+        <div id="feedback" class="text-center"></div>
+        <button id="next-question" class="hidden">Next Question</button>
+        <div id="score-display">Your Score: <span id="current-score">0</span></div>
+        <div id="streak-display">Current Streak: <span id="current-streak">0</span></div>
+        <div class="game-over-overlay" style="display: none;">
+            <div class="game-over-content">
+                <h2 class="game-over-title">Game Over</h2>
+                <p class="game-over-score">Your Score: <span id="final-score">0</span></p>
+                <button class="play-again-button">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const questionBox = document.getElementById("question-box");
+        const answerOptions = document.getElementsByClassName("answer-option");
+        const feedback = document.getElementById("feedback");
+        const nextButton = document.getElementById("next-question");
+        const gameOverOverlay = document.querySelector(".game-over-overlay");
+        const finalScoreDisplay = document.getElementById("final-score");
+        const playAgainButton = document.querySelector(".play-again-button");
+        const scoreDisplay = document.getElementById("current-score");
+        const streakDisplay = document.getElementById("current-streak");
+        const testamentButtons = document.querySelectorAll("#testament-selection button");
+
+        let questions = {
+            old: [
+                {
+                    question: "In what book of the Bible is the story of Jonah and the big fish found?",
+                    answer: "Jonah",
+                    options: ["Jonah", "Matthew", "Genesis"],
+                },
+                {
+                    question: "Who built the ark?",
+                    answer: "Noah",
+                    options: ["Noah", "Abraham", "Moses"],
+                },
+                {
+                    question: "Who led the Israelites out of Egypt?",
+                    answer: "Moses",
+                    options: ["Moses", "David", "Solomon"],
+                },
+                {
+                    question: "How many days and nights did it rain during the flood?",
+                    answer: "40",
+                    options: ["7", "30", "40"],
+                },
+                {
+                    question: "What did God create on the first day?",
+                    answer: "Light",
+                    options: ["Animals", "Light", "The Sky"],
+                },
+            ],
+            new: [
+                {
+                    question: "What is the first book of the New Testament?",
+                    answer: "Matthew",
+                    options: ["John", "Matthew", "Acts"],
+                },
+                {
+                    question: "What is the Lord's Prayer also known as?",
+                    answer: "Our Father",
+                    options: ["Our Father", "The Apostles' Creed", "The Nicene Creed"],
+                },
+                {
+                    question: "Who was the father of John the Baptist?",
+                    answer: "Zechariah",
+                    options: ["Joseph", "Zechariah", "Gabriel"],
+                },
+                {
+                    question: "What was the name of the last plague that God sent to Egypt?",
+                    answer: "Death of the firstborn",
+                    options: [
+                        "Locusts",
+                        "Death of the firstborn",
+                        "Boils",
+                    ],
+                },
+                {
+                    question: "What is the name of the river where Jesus was baptized?",
+                    answer: "Jordan",
+                    options: ["Nile", "Jordan", "Tigris"],
+                },
+            ],
+        };
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let usedQuestionIndices = [];
+        let currentQuestions = questions.old;
+
+        function selectQuestion() {
+            if (usedQuestionIndices.length === currentQuestions.length) {
+                endGame();
+                return;
+            }
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * currentQuestions.length);
+            } while (usedQuestionIndices.includes(randomIndex));
+            currentQuestionIndex = randomIndex;
+            usedQuestionIndices.push(randomIndex);
+            currentQuestion = currentQuestions[currentQuestionIndex];
+        }
+
+        function displayQuestion() {
+            questionBox.textContent = currentQuestion.question;
+            for (let i = 0; i < answerOptions.length; i++) {
+                answerOptions[i].textContent = currentQuestion.options[i];
+                answerOptions[i].onclick = () => checkAnswer(currentQuestion.options[i]);
+                answerOptions[i].disabled = false;
+            }
+            feedback.textContent = "";
+            nextButton.classList.add("hidden");
+        }
+
+        function checkAnswer(selectedOption) {
+            if (selectedOption === currentQuestion.answer) {
+                feedback.textContent = "Correct!";
+                score++;
+                streak++;
+                scoreDisplay.textContent = score;
+                streakDisplay.textContent = streak;
+            } else {
+                feedback.textContent = "Incorrect!";
+                streak = 0;
+                streakDisplay.textContent = streak;
+            }
+            for (let i = 0; i < answerOptions.length; i++) {
+                answerOptions[i].disabled = true;
+            }
+            nextButton.classList.remove("hidden");
+        }
+
+        function nextQuestion() {
+            selectQuestion();
+            displayQuestion();
+        }
+
+        function endGame() {
+            gameOverOverlay.style.display = "flex";
+            finalScoreDisplay.textContent = score;
+        }
+
+        function startGame() {
+            questions = shuffleArray(currentQuestions);
+            usedQuestionIndices = [];
+            score = 0;
+            streak = 0;
+            currentQuestionIndex = 0;
+            gameOverOverlay.style.display = "none";
+            scoreDisplay.textContent = score;
+            streakDisplay.textContent = streak;
+            nextQuestion();
+        }
+
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        testamentButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const testament = this.dataset.testament;
+                testamentButtons.forEach(b => b.classList.remove("selected"));
+                this.classList.add("selected");
+                if (testament === "old") {
+                    currentQuestions = questions.old;
+                } else {
+                    currentQuestions = questions.new;
+                }
+                startGame();
+            });
+        });
+
+        // Initialize the game with Old Testament selected by default
+        testamentButtons[0].classList.add("selected");
+        startGame();
+    </script>
+</body>
+</html>
