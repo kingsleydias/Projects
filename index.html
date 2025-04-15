@@ -1,1 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Ball</title>
+    <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            overflow: hidden; /* Prevent scrollbars */
+            font-family: 'Press Start 2P', cursive;
+            background-color: #121212; /* Dark background */
+            color: #ffffff;
+            text-align: center;
+        }
 
+        #gameCanvas {
+            background-color: #222222; /* Darker canvas */
+            border: 2px solid #ddd; /* Light border */
+            display: block;
+            margin: 0 auto; /* Center the canvas */
+            max-width: 95%; /* Responsive width */
+            max-height: 95vh; /* Responsive height, up to 95% of viewport height */
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+        }
+
+        #startButton, #muteButton {
+            margin-top: 15px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            transition: background-color 0.3s ease;
+            font-family: 'Press Start 2P', cursive;
+            margin-left: 10px;
+        }
+        #startButton {
+             background-color: #00B8D4; /* A brighter button color */
+        }
+
+        #startButton:hover, #muteButton:hover {
+            background-color: #45a049; /* Darker green */
+        }
+
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            color: white;
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 10px;
+            display: none; /* Initially hidden */
+        }
+
+        #scoreDisplay {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+             transform: translateX(-50%);
+            font-size: 1rem;
+            color: #ffffff;
+            z-index: 10;
+            padding: 10px;
+            border-radius: 8px;
+             background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+
+        }
+
+        .game-over-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 10;
+        }
+
+        .game-over-content {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            border: 4px solid #f00;
+        }
+
+        .game-over-title {
+            font-size: 1.5rem;
+            color: #f00;
+            margin-bottom: 10px;
+        }
+
+        .game-over-score {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+    </style>
+    <style>
+      @font-face {
+        font-family: 'LucideIcons';
+        src: url(https://cdn.jsdelivr.net/npm/lucide-static@latest/font/Lucide.ttf) format('truetype');
+      }
+      .lucide {
+        font-family: 'LucideIcons';
+        font-style: normal;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        display: inline-block;
+        line-height: 1;
+      }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <button id="startButton">Start</button>
+    <button id="muteButton"><span id="muteIcon" class="lucide">&#xea43;</span></button>  <div id="scoreDisplay">Score: 0</div>
+    <div id="message"></div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startButton = document.getElementById('startButton');
+        const muteButton = document.getElementById('muteButton');
+        const muteIcon = document.getElementById('muteIcon');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const messageElement = document.getElementById('message');
+
+        canvas.width = window.innerWidth * 0.8; // Adjust as needed
+        canvas.height = window.innerHeight * 0.6; // Adjust as needed
+
+        let paddleWidth = 100;
+        let paddleHeight = 15;
+        let paddleX = (canvas.width - paddleWidth) / 2;
+        let ballRadius = 10;
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height - 30;
+        let ballSpeedX = 5;
+        let ballSpeedY = -5;
+        let brickRowCount = 3;
+        let brickColumnCount = 8;
+        let brickWidth = 75;
+        let brickHeight = 20;
+        let brickPadding = 10;
+        let brickOffsetTop = 30;
+        let brickOffsetLeft = 30;
+        let score = 0;
+        let gamePlaying = false;
+        let muted = false;
+        let gameAnimationFrame; // Variable to hold the animation frame ID
+
+        let bricks = [];
+        for (let c = 0; c < brickColumnCount; c++) {
+            bricks[c] = [];
+            for (let r = 0; r < brickRowCount; r++) {
+                bricks[c][r] = { x: 0, y: 0, status: 1 };
+            }
+        }
+
+
+        // Sound Effects (Tone.js)
+        const brickHitSound = new Tone.MembraneSynth().toDestination();
+        const paddleHitSound = new Tone.FMSynth().toDestination();
+        const wallHitSound = new Tone.AMSynth().toDestination();
+        const gameOverSound = new Tone.NoiseSynth().toDestination();
+
+
+        function playBrickHitSound(){
+            if (!muted) brickHitSound.triggerAttackRelease("C4", "0.05");
+        }
+        function playPaddleHitSound(){
+            if (!muted)  paddleHitSound.triggerAttackRelease("G4", "0.05");
+        }
+
+        function playWallHitSound(){
+            if (!muted) wallHitSound.triggerAttackRelease("C3", "0.05");
+        }
+
+        function playGameOverSound(){
+             if (!muted) gameOverSound.triggerAttackRelease("C2", "0.5");
+        }
+
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.roundRect(paddleX, canvas.height - paddleHeight - 5, paddleWidth, paddleHeight, 8);
+            ctx.fillStyle = '#0095DD';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFD700';  // Gold color
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    if (bricks[c][r].status === 1) {
+                        let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.roundRect(brickX, brickY, brickWidth, brickHeight, 5);
+                         // Rainbow colors for bricks
+                        const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
+                        ctx.fillStyle = colors[r % colors.length];
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+
+         function drawScore() {
+            scoreDisplay.textContent = `Score: ${score}`;
+        }
+
+
+
+        function collisionDetection() {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    let b = bricks[c][r];
+                    if (b.status === 1) {
+                        if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight) {
+                            ballSpeedY = -ballSpeedY;
+                            b.status = 0;
+                            score++;
+                            playBrickHitSound();
+                            if (score === brickRowCount * brickColumnCount) {
+                                // WIN CONDITION - Show message and stop game
+                                gamePlaying = false; // Stop game updates
+                                showMessage('YOU WIN, CONGRATULATIONS!');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function update() {
+            if (!gamePlaying) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            drawBall();
+            drawPaddle();
+            drawScore();
+            collisionDetection();
+
+            // Wall collision
+            if (ballX + ballSpeedX > canvas.width - ballRadius || ballX + ballSpeedX < ballRadius) {
+                ballSpeedX = -ballSpeedX;
+                playWallHitSound();
+            }
+            if (ballY + ballSpeedY < ballRadius) {
+                ballSpeedY = -ballSpeedY;
+                playWallHitSound();
+
+            } else if (ballY + ballSpeedY > canvas.height - ballRadius - paddleHeight) {
+                 // Paddle collision
+                if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+                    ballSpeedY = -ballSpeedY;
+
+                    // Adjust X speed based on hit position on paddle (optional)
+                    let deltaX = ballX - (paddleX + paddleWidth / 2);
+                    ballSpeedX = ballSpeedX + deltaX * 0.15; //Adjust for feel
+                    playPaddleHitSound();
+                } else {
+                    // GAME OVER - BALL LOSS -  Show Game Over Screen and stop game
+                    gamePlaying = false; // Stop game updates here
+                    playGameOverSound();
+                    showGameOverScreen();
+                    return;
+                }
+            }
+
+
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            // Paddle movement
+            if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                paddleX += 7;
+            } else if (leftPressed && paddleX > 0) {
+                paddleX -= 7;
+            }
+
+            gameAnimationFrame = requestAnimationFrame(update); // Continue animation
+        }
+
+
+
+        let rightPressed = false;
+        let leftPressed = false;
+        let touchStartX = null;
+
+        function keyDownHandler(e) {
+            if (e.key === 'Right' || e.key === 'ArrowRight') {
+                rightPressed = true;
+            } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
+                leftPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key === 'Right' || e.key === 'ArrowRight') {
+                rightPressed = false;
+            } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
+                leftPressed = false;
+            }
+        }
+
+        function touchStartHandler(e) {
+          if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+          }
+          e.preventDefault();
+        }
+
+       function touchMoveHandler(e) {
+            if (!touchStartX) {
+              return;
+            }
+
+            const touchX = e.touches[0].clientX;
+            const touchDiff = touchX - touchStartX;
+
+            if (touchDiff > 5) { // Adjust sensitivity as needed
+              // Move paddle right, within bounds
+              paddleX = Math.min(paddleX + 10, canvas.width - paddleWidth); // Move faster
+            } else if (touchDiff < -5) {
+              // Move paddle left, within bounds
+              paddleX = Math.max(paddleX - 10, 0);  // Move faster
+            }
+            // Update touchStartX for continuous movement
+            touchStartX = touchX;
+            e.preventDefault();
+       }
+
+        function touchEndHandler(e) {
+          touchStartX = null;
+          e.preventDefault();
+        }
+
+        function startGame() {
+            if (!gamePlaying) {
+                resetGame(); // Reset game state before starting
+                hideMessage(); // Hide any previous messages
+                gamePlaying = true;
+                update(); // Start the game loop.
+            }
+        }
+        function toggleMute() {
+          muted = !muted;
+          muteIcon.textContent = muted ? '\uea41' : '\uea43'; // Change icon
+        }
+
+        function showMessage(msg) {
+            messageElement.textContent = msg;
+            messageElement.style.display = 'block';
+        }
+        function hideMessage() {
+            messageElement.style.display = 'none';
+        }
+
+        function resetGame() {
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
+            paddleWidth = 100;
+            paddleX = (canvas.width - paddleWidth) / 2;
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            ballSpeedX = 5;
+            ballSpeedY = -5;
+
+             bricks = []; //reset bricks array
+            for (let c = 0; c < brickColumnCount; c++) {
+                bricks[c] = [];
+                for (let r = 0; r < brickRowCount; r++) {
+                    bricks[c][r] = { x: 0, y: 0, status: 1 };
+                }
+            }
+
+            // If there's an existing animation frame, cancel it
+            if (gameAnimationFrame) {
+                cancelAnimationFrame(gameAnimationFrame);
+            }
+
+            // Redraw initial game state
+            drawBricks();
+            drawBall();
+            drawPaddle();
+            drawScore();
+        }
+
+        function showGameOverScreen() {
+            // Create and style overlay
+            const gameOverOverlay = document.createElement('div');
+            gameOverOverlay.classList.add('game-over-overlay');
+
+            const gameOverContent = document.createElement('div');
+            gameOverContent.classList.add('game-over-content');
+
+            const gameOverTitle = document.createElement('h2');
+            gameOverTitle.classList.add('game-over-title');
+            gameOverTitle.textContent = 'Game Over';
+
+            const gameOverScore = document.createElement('p');
+            gameOverScore.classList.add('game-over-score');
+            gameOverScore.textContent = `Final Score: ${score}`;
+
+            const newGameButton = document.createElement('button');
+            newGameButton.textContent = 'New Game';
+            newGameButton.onclick = () => {
+                // Remove overlay
+                gameOverOverlay.remove();
+                startGame(); // Start a new game
+            };
+            newGameButton.classList.add('start-button'); // Reuse start button styles
+
+            // Assemble elements
+            gameOverContent.appendChild(gameOverTitle);
+            gameOverContent.appendChild(gameOverScore);
+            gameOverContent.appendChild(newGameButton);
+            gameOverOverlay.appendChild(gameOverContent);
+
+            // Add to body
+            document.body.appendChild(gameOverOverlay);
+        }
+
+
+        document.addEventListener('keydown', keyDownHandler, false);
+        document.addEventListener('keyup', keyUpHandler, false);
+        //Touch events
+        canvas.addEventListener('touchstart', touchStartHandler, false);
+        canvas.addEventListener('touchmove', touchMoveHandler, false);
+        canvas.addEventListener('touchend', touchEndHandler, false);
+        startButton.addEventListener('click', startGame);
+        muteButton.addEventListener('click', toggleMute);
+
+        //Initial call.
+        drawBricks(); //Draw once so it is visible on start.
+        drawBall();
+        drawPaddle();
+        drawScore();
+        showMessage('Press Start Button or Tap Screen');
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth * 0.8;
+            canvas.height = window.innerHeight * 0.6;
+            resetGame(); // Reset and redraw everything
+        });
+
+    </script>
+</body>
+</html>
