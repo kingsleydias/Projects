@@ -3,354 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bible Trivia Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <title>Bible Quiz Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Roboto Condensed', sans-serif;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-        text-align: center;
-      }
-      #question-box {
-        background-color: #f0f0f0;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-        font-size: 1.2rem;
-        color: #333;
-        min-height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid #ccc;
-      }
-      .answer-options {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-bottom: 20px;
-      }
-      .answer-option {
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        margin: 5px 10px;
-        cursor: pointer;
-        font-size: 1rem;
-        flex: 1 0 auto;
-        min-width: 200px;
-        text-align: center;
-        transition: background-color 0.3s ease;
-      }
-      .answer-option:hover {
-        background-color: #367c39;
-      }
-      #feedback {
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 20px;
-        min-height: 30px;
-      }
-      #next-question {
-        background-color: #008CBA;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-size: 1rem;
-        margin-top: 10px;
-        transition: background-color 0.3s ease;
-      }
-      #next-question:hover {
-        background-color: #005682;
-      }
-      .game-over-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.85);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 10;
-      }
-      .game-over-content {
-        background-color: white;
-        border-radius: 8px;
-        padding: 20px;
-        text-align: center;
-        width: 90%;
-        max-width: 600px;
-      }
-      .game-over-title {
-        font-size: 2rem;
-        color: #FFD700;
-        margin-bottom: 10px;
-      }
-      .game-over-score {
-        font-size: 1.5rem;
-        color: #333;
-        margin-bottom: 20px;
-      }
-      .play-again-button {
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        margin-top: 10px;
-        transition: background-color 0.3s ease;
-      }
-      .play-again-button:hover {
-        background-color: #367c39;
-      }
-      #score-display {
-        font-size: 1.5rem;
-        color: #333;
-        margin-bottom: 20px;
-      }
-      #streak-display {
-        font-size: 1.2rem;
-        color: #333;
-        margin-bottom: 20px;
-      }
-      #testament-selection {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-      }
-      #testament-selection button {
-        background-color: #008CBA;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-        margin: 0 10px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color 0.3s ease;
-      }
-      #testament-selection button:hover {
-        background-color: #005682;
-      }
-      #testament-selection button.selected {
-        background-color: #367c39;
-      }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div class="container">
-        <h1 class="text-3xl font-bold mb-8 text-center text-blue-700 title-font">Bible Trivia Game</h1>
-        <div id="testament-selection">
-            <button data-testament="old">Old Testament</button>
-            <button data-testament="new">New Testament</button>
-        </div>
-        <div id="question-box"></div>
-        <div class="answer-options" id="answer-options">
-            <button class="answer-option" id="option1"></button>
-            <button class="answer-option" id="option2"></button>
-            <button class="answer-option" id="option3"></button>
-        </div>
-        <div id="feedback" class="text-center"></div>
-        <button id="next-question" class="hidden">Next Question</button>
-        <div id="score-display">Your Score: <span id="current-score">0</span></div>
-        <div id="streak-display">Current Streak: <span id="current-streak">0</span></div>
-        <div class="game-over-overlay" style="display: none;">
-            <div class="game-over-content">
-                <h2 class="game-over-title">Game Over</h2>
-                <p class="game-over-score">Your Score: <span id="final-score">0</span></p>
-                <button class="play-again-button">Play Again</button>
+<body class="bg-black min-h-screen flex items-center justify-center font-inter">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+        <h1 class="text-3xl font-semibold text-blue-600 text-center mb-6">Bible Quiz Game</h1>
+        <div id="question-container" class="mb-6">
             </div>
+        <div id="feedback" class="mt-4 p-4 rounded-md text-center font-medium hidden">
+            </div>
+        <div class="flex justify-center gap-4">
+            <button id="next-button" class="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline hidden">
+                Next Question
+            </button>
+            <button id="restart-button" class="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline hidden">
+                Play Again
+            </button>
+        </div>
+        <div id="score-container" class="mt-6 text-center text-lg font-semibold text-gray-700">
+          Score: <span id="score-display">0</span> | Streak: <span id="streak-display">0</span>
         </div>
     </div>
-    <script>
-        const questionBox = document.getElementById("question-box");
-        const answerOptions = document.getElementsByClassName("answer-option");
-        const feedback = document.getElementById("feedback");
-        const nextButton = document.getElementById("next-question");
-        const gameOverOverlay = document.querySelector(".game-over-overlay");
-        const finalScoreDisplay = document.getElementById("final-score");
-        const playAgainButton = document.querySelector(".play-again-button");
-        const scoreDisplay = document.getElementById("current-score");
-        const streakDisplay = document.getElementById("current-streak");
-        const testamentButtons = document.querySelectorAll("#testament-selection button");
 
-        let questions = {
-            old: [
-                {
-                    question: "In what book of the Bible is the story of Jonah and the big fish found?",
-                    answer: "Jonah",
-                    options: ["Jonah", "Matthew", "Genesis"],
-                },
-                {
-                    question: "Who built the ark?",
-                    answer: "Noah",
-                    options: ["Noah", "Abraham", "Moses"],
-                },
-                {
-                    question: "Who led the Israelites out of Egypt?",
-                    answer: "Moses",
-                    options: ["Moses", "David", "Solomon"],
-                },
-                {
-                    question: "How many days and nights did it rain during the flood?",
-                    answer: "40",
-                    options: ["7", "30", "40"],
-                },
-                {
-                    question: "What did God create on the first day?",
-                    answer: "Light",
-                    options: ["Animals", "Light", "The Sky"],
-                },
-            ],
-            new: [
-                {
-                    question: "What is the first book of the New Testament?",
-                    answer: "Matthew",
-                    options: ["John", "Matthew", "Acts"],
-                },
-                {
-                    question: "What is the Lord's Prayer also known as?",
-                    answer: "Our Father",
-                    options: ["Our Father", "The Apostles' Creed", "The Nicene Creed"],
-                },
-                {
-                    question: "Who was the father of John the Baptist?",
-                    answer: "Zechariah",
-                    options: ["Joseph", "Zechariah", "Gabriel"],
-                },
-                {
-                    question: "What was the name of the last plague that God sent to Egypt?",
-                    answer: "Death of the firstborn",
-                    options: [
-                        "Locusts",
-                        "Death of the firstborn",
-                        "Boils",
-                    ],
-                },
-                {
-                    question: "What is the name of the river where Jesus was baptized?",
-                    answer: "Jordan",
-                    options: ["Nile", "Jordan", "Tigris"],
-                },
-            ],
-        };
+    <script>
+        const questionContainer = document.getElementById('question-container');
+        const feedback = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-button');
+        const restartButton = document.getElementById('restart-button');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreContainer = document.getElementById('score-container');
+        const streakDisplay = document.getElementById('streak-display'); // Get the streak display element
 
         let currentQuestionIndex = 0;
         let score = 0;
-        let streak = 0;
-        let usedQuestionIndices = [];
-        let currentQuestions = questions.old;
-
-        function selectQuestion() {
-            if (usedQuestionIndices.length === currentQuestions.length) {
-                endGame();
-                return;
-            }
-            let randomIndex;
-            do {
-                randomIndex = Math.floor(Math.random() * currentQuestions.length);
-            } while (usedQuestionIndices.includes(randomIndex));
-            currentQuestionIndex = randomIndex;
-            usedQuestionIndices.push(randomIndex);
-            currentQuestion = currentQuestions[currentQuestionIndex];
-        }
+        let streak = 0; // Initialize streak counter
+        let questions = [
+            {
+                question: "In the beginning, God created the ___ and the ___.",
+                options: ["heavens, earth", "sun, moon", "stars, planets", "light, darkness"],
+                correctAnswer: "heavens, earth"
+            },
+            {
+                question: "What was the name of the garden where Adam and Eve lived?",
+                options: ["Garden of Eden", "Garden of Gethsemane", "Garden of Babylon", "Garden of Zion"],
+                correctAnswer: "Garden of Eden"
+            },
+            {
+                question: "Who built the ark?",
+                options: ["Abraham", "Moses", "Noah", "David"],
+                correctAnswer: "Noah"
+            },
+            {
+                question: "What was the sign of God's covenant with Abraham?",
+                options: ["Rainbow", "Circumcision", "The Sabbath", "The Temple"],
+                correctAnswer: "Circumcision"
+            },
+            {
+                question: "How many plagues did God send to Egypt?",
+                options: ["7", "10", "12", "15"],
+                correctAnswer: "10"
+            },
+            {
+                question: "Who led the Israelites out of Egypt?",
+                options: ["Joshua", "Moses", "Aaron", "Jacob"],
+                correctAnswer: "Moses"
+            },
+            {
+                question: "What did God give Moses on Mount Sinai?",
+                options: ["The Ten Commandments", "The Ark of the Covenant", "The Golden Calf", "The Book of the Law"],
+                correctAnswer: "The Ten Commandments"
+            },
+            {
+                question: "Who was the first king of Israel?",
+                options: ["David", "Saul", "Solomon", "Abraham"],
+                correctAnswer: "Saul"
+            },
+            {
+                question: "What was the name of the giant that David defeated?",
+                options: ["Goliath", "Og", "Sihon", "Amor"],
+                correctAnswer: "Goliath"
+            },
+            {
+                question: "How many books are in the New Testament?",
+                options: ["27", "39", "46", "66"],
+                correctAnswer: "27"
+            },
+            {
+                question: "What is the first book of the Bible?",
+                options: ["Genesis", "Exodus", "Leviticus", "Numbers"],
+                correctAnswer: "Genesis"
+            },
+            {
+                question: "Who was Abraham's wife?",
+                options: ["Sarah", "Rebekah", "Rachel", "Leah"],
+                correctAnswer: "Sarah"
+            },
+             {
+                question: "What did God promise Abraham?",
+                options: ["Many descendants", "Great wealth", "Long life", "All of the above"],
+                correctAnswer: "All of the above"
+            },
+            {
+                question: "Who interpreted Pharaoh's dreams?",
+                options: ["Moses", "Joseph", "Daniel", "Jacob"],
+                correctAnswer: "Joseph"
+            },
+            {
+                question: "What did the Israelites eat in the wilderness?",
+                options: ["Manna", "Quail", "Locusts", "Honey"],
+                correctAnswer: "Manna"
+            },
+            {
+                question: "Which sea did Moses part?",
+                options: ["Red Sea", "Dead Sea", "Mediterranean Sea", "Sea of Galilee"],
+                correctAnswer: "Red Sea"
+            },
+            {
+                question: "Who was Moses' brother?",
+                options: ["Aaron", "Joshua", "Caleb", "Samuel"],
+                correctAnswer: "Aaron"
+            },
+            {
+                question: "Where did Moses receive the Ten Commandments?",
+                options: ["Mount Sinai", "Mount Everest", "Mount Zion", "Mount Ararat"],
+                correctAnswer: "Mount Sinai"
+            },
+            {
+                question: "Who succeeded Moses as the leader of the Israelites?",
+                options: ["Joshua", "Aaron", "Caleb", "Samuel"],
+                correctAnswer: "Joshua"
+            },
+            {
+                question: "What river did the Israelites cross to enter the Promised Land?",
+                options: ["Jordan River", "Nile River", "Tigris River", "Euphrates River"],
+                correctAnswer: "Jordan River"
+            },
+            {
+                question: "Who wrote the first five books of the Bible?",
+                options: ["Moses", "David", "Solomon", "Isaiah"],
+                correctAnswer: "Moses"
+            },
+            {
+                question: "What was the name of Isaac's wife?",
+                options: ["Rebekah", "Rachel", "Leah", "Sarah"],
+                correctAnswer: "Rebekah"
+            },
+            {
+                question: "Who were the twin sons of Isaac?",
+                options: ["Jacob and Esau", "Cain and Abel", "David and Solomon", "Joseph and Benjamin"],
+                correctAnswer: "Jacob and Esau"
+            },
+            {
+                question: "What did Jacob dream about on his way to Haran?",
+                options: ["A ladder to heaven", "A burning bush", "A great flood", "A battle with an angel"],
+                correctAnswer: "A ladder to heaven"
+            },
+            {
+                question: "How many sons did Jacob have?",
+                options: ["12", "10", "14", "8"],
+                correctAnswer: "12"
+            },
+            {
+                question: "Who was Jacob's favorite son?",
+                options: ["Joseph", "Benjamin", "Judah", "Reuben"],
+                correctAnswer: "Joseph"
+            },
+            {
+                question: "What did Joseph's brothers do to him?",
+                options: ["Sold him into slavery", "Killed him", "Left him in a pit", "All of the above"],
+                correctAnswer: "Sold him into slavery"
+            },
+            {
+                question: "In what country did Joseph become a high-ranking official?",
+                options: ["Egypt", "Babylon", "Assyria", "Persia"],
+                correctAnswer: "Egypt"
+            },
+            {
+                question: "What did Joseph predict for Egypt?",
+                options: ["Famine", "Prosperity", "War", "Earthquake"],
+                correctAnswer: "Famine"
+            },
+            {
+                question: "How did Joseph's brothers react when they met him in Egypt?",
+                options: ["They didn't recognize him", "They rejoiced", "They attacked him", "They asked for forgiveness"],
+                correctAnswer: "They didn't recognize him"
+            },
+            {
+                question: "What is the name of the book that comes after Genesis?",
+                options: ["Exodus", "Leviticus", "Numbers", "Deuteronomy"],
+                correctAnswer: "Exodus"
+            },
+            {
+                question: "What was the main purpose of the book of Leviticus?",
+                options: ["To provide laws and rules for the Israelites", "To tell the story of the Exodus", "To describe the creation of the world", "To record the history of the kings of Israel"],
+                correctAnswer: "To provide laws and rules for the Israelites"
+            },
+            {
+                question: "What was the Day of Atonement called?",
+                options: ["Yom Kippur", "Passover", "Sukkot", "Hanukkah"],
+                correctAnswer: "Yom Kippur"
+            },
+            {
+                question: "What is the name of the portable sanctuary used by the Israelites in the wilderness?",
+                options: ["Tabernacle", "Temple", "Synagogue", "Church"],
+                correctAnswer: "Tabernacle"
+            },
+            {
+                question: "What were the people called who were set apart to serve God in the temple?",
+                options: ["Levites", "Priests", " prophets", "Rabbis"],
+                correctAnswer: "Levites"
+            },
+            {
+                question: "What was the purpose of the sacrifices described in Leviticus?",
+                options: ["To atone for sins", "To give thanks to God", "To celebrate festivals", "All of the above"],
+                correctAnswer: "To atone for sins"
+            },
+            {
+                question: "What is the name of the book that comes after Leviticus?",
+                options: ["Numbers", "Deuteronomy", "Joshua", "Judges"],
+                correctAnswer: "Numbers"
+            },
+            {
+                question: "How many years did the Israelites wander in the wilderness?",
+                options: ["40", "70", "100", "120"],
+                correctAnswer: "40"
+            },
+            {
+                question: "What was the name of the mountain where Aaron died?",
+                options: ["Mount Hor", "Mount Sinai", "Mount Nebo", "Mount Zion"],
+                correctAnswer: "Mount Hor"
+            },
+            {
+                question: "Who were the two spies who gave a good report about the Promised Land?",
+                options: ["Joshua and Caleb", "Moses and Aaron", "David and Jonathan", "Peter and John"],
+                correctAnswer: "Joshua and Caleb"
+            },
+            {
+                question: "What was the object that God told Moses to make to heal the people from snake bites?",
+                options: ["Bronze snake", "Golden calf", "Ark of the Covenant", "Burning bush"],
+                correctAnswer: "Bronze snake"
+            },
+        ];
 
         function displayQuestion() {
-            questionBox.textContent = currentQuestion.question;
-            for (let i = 0; i < answerOptions.length; i++) {
-                answerOptions[i].textContent = currentQuestion.options[i];
-                answerOptions[i].onclick = () => checkAnswer(currentQuestion.options[i]);
-                answerOptions[i].disabled = false;
-            }
-            feedback.textContent = "";
-            nextButton.classList.add("hidden");
+            const currentQuestion = questions[currentQuestionIndex];
+
+            const questionElement = document.createElement('h2');
+            questionElement.className = 'text-xl font-semibold text-gray-800 mb-4';
+            questionElement.textContent = currentQuestion.question;
+
+            const optionsElement = document.createElement('div');
+            optionsElement.className = 'space-y-3';
+
+            currentQuestion.options.forEach((option, index) => {
+                const optionButton = document.createElement('button');
+                optionButton.className = `
+                    bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md w-full text-left
+                    focus:outline-none focus:shadow-outline transition duration-300 ease-in-out
+                `;
+                optionButton.textContent = option;
+                optionButton.dataset.option = option; // Store the option value
+
+                optionButton.addEventListener('click', () => handleOptionSelect(option));
+                optionsElement.appendChild(optionButton);
+            });
+
+            questionContainer.innerHTML = '';
+            questionContainer.appendChild(questionElement);
+            questionContainer.appendChild(optionsElement);
+            feedback.className = 'mt-4 p-4 rounded-md text-center font-medium hidden';
+            nextButton.classList.add('hidden');
+            restartButton.classList.add('hidden');
+            scoreDisplay.textContent = score;
+            streakDisplay.textContent = streak; // Update streak display
         }
 
-        function checkAnswer(selectedOption) {
-            if (selectedOption === currentQuestion.answer) {
-                feedback.textContent = "Correct!";
+        function handleOptionSelect(selectedOption) {
+            const currentQuestion = questions[currentQuestionIndex];
+
+            if (selectedOption === currentQuestion.correctAnswer) {
+                feedback.textContent = "Correct! Well done!";
+                feedback.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'border-red-400');
+                feedback.classList.add('bg-green-100', 'text-green-700', 'border-green-400');
                 score++;
-                streak++;
-                scoreDisplay.textContent = score;
-                streakDisplay.textContent = streak;
+                streak++; // Increment streak
             } else {
-                feedback.textContent = "Incorrect!";
-                streak = 0;
-                streakDisplay.textContent = streak;
+                feedback.textContent = "Incorrect! Try the next question.";
+                feedback.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'border-green-400');
+                feedback.classList.add('bg-red-100', 'text-red-700', 'border-red-400');
+                streak = 0; // Reset streak
             }
-            for (let i = 0; i < answerOptions.length; i++) {
-                answerOptions[i].disabled = true;
+
+            scoreDisplay.textContent = score;
+            streakDisplay.textContent = streak; // Update streak display
+
+            if (currentQuestionIndex < questions.length - 1) {
+                nextButton.classList.remove('hidden');
+            } else {
+                restartButton.classList.remove('hidden');
+                questionContainer.innerHTML = `<h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Quiz Finished!</h2><p class="text-lg text-gray-700 text-center mb-4">Your score: ${score} out of ${questions.length}</p>`;
+                if (score === questions.length) {
+                    feedback.textContent = "Perfect Score! Well Done!";
+                    feedback.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'border-red-400');
+                    feedback.classList.add('bg-green-100', 'text-green-700', 'border-green-400');
+                } else {
+                    feedback.textContent = "Thanks for playing! Try again to improve your score.";
+                    feedback.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'border-green-400');
+                    feedback.classList.add('bg-blue-100', 'text-blue-700', 'border-blue-400');
+                }
             }
-            nextButton.classList.remove("hidden");
         }
 
-        function nextQuestion() {
-            selectQuestion();
+        function showNextQuestion() {
+            currentQuestionIndex++;
             displayQuestion();
         }
 
-        function endGame() {
-            gameOverOverlay.style.display = "flex";
-            finalScoreDisplay.textContent = score;
-        }
-
-        function startGame() {
-            questions = shuffleArray(currentQuestions);
-            usedQuestionIndices = [];
-            score = 0;
-            streak = 0;
+        function restartGame() {
             currentQuestionIndex = 0;
-            gameOverOverlay.style.display = "none";
-            scoreDisplay.textContent = score;
-            streakDisplay.textContent = streak;
-            nextQuestion();
+            score = 0;
+            streak = 0; // Reset streak on restart
+            displayQuestion();
         }
 
-        function shuffleArray(array) {
-            let currentIndex = array.length, randomIndex;
-            while (currentIndex != 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex--;
-                [array[currentIndex], array[randomIndex]] = [
-                    array[randomIndex], array[currentIndex]];
-            }
-            return array;
-        }
+        nextButton.addEventListener('click', showNextQuestion);
+        restartButton.addEventListener('click', restartGame);
 
-        testamentButtons.forEach(button => {
-            button.addEventListener("click", function() {
-                const testament = this.dataset.testament;
-                testamentButtons.forEach(b => b.classList.remove("selected"));
-                this.classList.add("selected");
-                if (testament === "old") {
-                    currentQuestions = questions.old;
-                } else {
-                    currentQuestions = questions.new;
-                }
-                startGame();
-            });
-        });
-
-        // Initialize the game with Old Testament selected by default
-        testamentButtons[0].classList.add("selected");
-        startGame();
+        displayQuestion();
     </script>
-        <footer class="bg-black text-gray-400 py-4 text-center rounded-md border-t border-gray-800">
-        <p>© 2025 Kingsley Dias GitHub Projects. All rights reserved.</p>
-    </footer>
 </body>
 </html>
